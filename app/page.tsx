@@ -18,19 +18,19 @@ const generateInvoiceNumber = () => {
 };
 
 const initialData: InvoiceData = {
-  senderName: "ETARCOS DEV",
+  senderName: "Emetteur",
   senderSlogan: "Solutions Numériques & Développement Web",
   senderEmail: "etarcos3@gmail.com",
   senderPhone: "+(237) 656 954 474",
 
-  recipientName: "Université Internationale Jean Paul 2 de Bafang",
-  recipientAddress: "Bafang, Région de l'Ouest — Cameroun",
+  recipientName: "Recepteur de la facture",
+  recipientAddress: "Ville, Région — Pays",
 
   invoiceNumber: generateInvoiceNumber(),
-  invoiceDate: "Douala, le 22 juin 2026",
+  invoiceDate: "Ville, le xx/xx/xxxx",
   invoiceValidity: "30 jours",
 
-  subject: "Services d'hébergement, d'infrastructure et de maintenance du site web institutionnel",
+  subject: "Objet de la facture",
   fontFamily: "Arial, Helvetica, sans-serif",
   template: "classic",
 
