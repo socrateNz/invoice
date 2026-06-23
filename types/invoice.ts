@@ -21,6 +21,7 @@ export interface InvoiceData {
   
   subject: string;
   fontFamily?: string;
+  template: 'classic' | 'modern' | 'minimalist' | 'creative' | 'elegant' | 'startup' | 'corporate' | 'eco' | 'retro' | 'futuristic';
   
   items: InvoiceItem[];
 }

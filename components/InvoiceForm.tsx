@@ -37,15 +37,32 @@ export default function InvoiceForm({ onDataChange, initialData }: InvoiceFormPr
         {/* Personnalisation */}
         <section>
           <h3 className="text-lg font-semibold border-b pb-2 mb-4 text-gray-700">Personnalisation</h3>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Police de caractères</label>
-            <select {...register("fontFamily")} className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
-              <option value="Arial, Helvetica, sans-serif">Arial / Sans-serif (Moderne)</option>
-              <option value="'Times New Roman', Times, serif">Times New Roman (Classique)</option>
-              <option value="'Courier New', Courier, monospace">Courier New (Monospace)</option>
-              <option value="Georgia, serif">Georgia (Élégant)</option>
-              <option value="Verdana, Geneva, sans-serif">Verdana (Lisible)</option>
-            </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Modèle de facture</label>
+              <select {...register("template")} className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="classic">Classique (Bleu corporatif)</option>
+                <option value="modern">Moderne (Gris épuré)</option>
+                <option value="minimalist">Minimaliste (Noir & Blanc)</option>
+                <option value="creative">Créatif (Design audacieux)</option>
+                <option value="elegant">Élégant (Style chic)</option>
+                <option value="startup">Startup (Vibrant & Tech)</option>
+                <option value="corporate">Entreprise (Strict & Formel)</option>
+                <option value="eco">Éco (Nature & Douceur)</option>
+                <option value="retro">Rétro (Vintage & Grille)</option>
+                <option value="futuristic">Futuriste (Cyber & Géométrique)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Police de caractères</label>
+              <select {...register("fontFamily")} className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="Arial, Helvetica, sans-serif">Arial / Sans-serif (Moderne)</option>
+                <option value="'Times New Roman', Times, serif">Times New Roman (Classique)</option>
+                <option value="'Courier New', Courier, monospace">Courier New (Monospace)</option>
+                <option value="Georgia, serif">Georgia (Élégant)</option>
+                <option value="Verdana, Geneva, sans-serif">Verdana (Lisible)</option>
+              </select>
+            </div>
           </div>
         </section>
 

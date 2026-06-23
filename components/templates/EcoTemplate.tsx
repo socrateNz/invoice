@@ -1,0 +1,100 @@
+import { InvoiceData } from "@/types/invoice";
+import { formatCurrency, numberToWordsFR } from "@/utils/format";
+import { forwardRef } from "react";
+
+interface TemplateProps {
+  data: InvoiceData;
+}
+
+const EcoTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) => {
+  const calculateTotal = () => data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
+  const total = calculateTotal();
+
+  return (
+    <div className="bg-[#ffffff] shadow-lg mx-auto w-[210mm] min-h-[297mm] relative" style={{ padding: '0' }}>
+      <div ref={ref} className="p-[40px] bg-[#ffffff] h-full w-full text-[#3f6212] text-sm relative" style={{ fontFamily: data.fontFamily || "Arial, sans-serif" }}>
+
+        <div className="absolute top-0 left-0 w-full h-4 bg-[#65a30d]"></div>
+        
+        <header className="flex justify-between items-center mb-16 pt-8">
+          <div className="w-[50%]">
+            <h1 className="text-4xl font-extrabold text-[#4d7c0f] tracking-tight mb-1">{data.senderName || 'ECO GREEN'}</h1>
+            <p className="text-sm font-medium text-[#65a30d] mb-4">{data.senderSlogan || 'Slogan écologique'}</p>
+            <div className="text-xs space-y-1 text-[#3f6212] opacity-80">
+              <p>{data.senderEmail || 'hello@eco.com'}</p>
+              <p>{data.senderPhone || '+000 000 000 000'}</p>
+            </div>
+          </div>
+          <div className="text-right w-[40%] text-[#4d7c0f]">
+            <h2 className="text-4xl font-light uppercase tracking-widest mb-4">Facture</h2>
+            <div className="text-sm bg-[#f7fee7] p-4 rounded-xl inline-block text-left w-full border border-[#d9f99d]">
+              <p className="flex justify-between mb-1"><span className="text-[#65a30d]">N°</span> <span className="font-bold">{data.invoiceNumber || '---'}</span></p>
+              <p className="flex justify-between"><span className="text-[#65a30d]">Date</span> <span className="font-bold">{data.invoiceDate || '---'}</span></p>
+            </div>
+          </div>
+        </header>
+
+        <div className="mb-12 border-l-4 border-[#84cc16] pl-6">
+          <h3 className="text-xs font-bold text-[#84cc16] uppercase tracking-wider mb-2">À l'attention de</h3>
+          <h4 className="font-bold text-xl text-[#3f6212]">{data.recipientName || 'Client Name'}</h4>
+          <p className="text-[#4d7c0f] whitespace-pre-line mt-2">{data.recipientAddress || 'Client Address'}</p>
+        </div>
+
+        <div className="mb-8 p-4 bg-[#f7fee7] rounded-xl text-[#3f6212]">
+          <span className="font-bold uppercase text-xs mr-2 text-[#65a30d]">Objet :</span>
+          <span className="font-medium">{data.subject || 'Objet de la facture'}</span>
+        </div>
+
+        <table className="w-full mb-10">
+          <thead>
+            <tr className="border-b-2 border-[#84cc16]">
+              <th className="py-3 text-left text-[#4d7c0f] text-xs font-bold uppercase tracking-wider">Description des services</th>
+              <th className="py-3 text-center text-[#4d7c0f] text-xs font-bold uppercase tracking-wider">Qté</th>
+              <th className="py-3 text-right text-[#4d7c0f] text-xs font-bold uppercase tracking-wider">Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.items.length > 0 ? data.items.map((item) => (
+              <tr key={item.id}>
+                <td className="py-5 border-b border-[#ecfccb] align-top">
+                  <div className="font-bold text-[#3f6212] mb-1 text-base">{item.designation || 'Désignation'}</div>
+                  <div className="text-[#4d7c0f] text-xs whitespace-pre-line opacity-80">{item.description}</div>
+                </td>
+                <td className="py-5 border-b border-[#ecfccb] align-top text-center font-medium">{item.quantity || '1'}</td>
+                <td className="py-5 border-b border-[#ecfccb] align-top text-right font-bold text-[#3f6212]">{formatCurrency((parseFloat(item.quantity) || 1) * (item.price || 0))}</td>
+              </tr>
+            )) : (
+              <tr><td colSpan={3} className="py-8 text-center text-[#bef264]">Aucune ligne ajoutée</td></tr>
+            )}
+          </tbody>
+        </table>
+
+        <div className="flex justify-end mb-12">
+          <div className="w-[50%] p-6 rounded-2xl bg-[#ecfccb] flex justify-between items-center border border-[#d9f99d]">
+            <span className="font-bold text-[#4d7c0f] uppercase tracking-widest text-sm">Total</span>
+            <span className="font-black text-2xl text-[#3f6212]">{formatCurrency(total)} FCFA</span>
+          </div>
+        </div>
+
+        <div className="mb-16 text-[#4d7c0f] text-sm text-center">
+          Montant arrêté à : <span className="font-bold">{numberToWordsFR(total)} Francs CFA</span>
+        </div>
+
+        <div className="flex justify-between items-end mt-auto text-xs">
+          <div>
+            <p className="font-bold text-[#4d7c0f] mb-1">Règlement</p>
+            <p className="text-[#65a30d]">Virement bancaire / Mobile Money</p>
+          </div>
+          <div className="text-right">
+            <p className="font-bold text-[#4d7c0f] mb-6">L'équipe {data.senderName}</p>
+            <p className="text-[#65a30d] italic">Merci de votre confiance écologique.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+});
+
+EcoTemplate.displayName = "EcoTemplate";
+export default EcoTemplate;

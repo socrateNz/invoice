@@ -1,0 +1,134 @@
+import { InvoiceData } from "@/types/invoice";
+import { formatCurrency, numberToWordsFR } from "@/utils/format";
+import { forwardRef } from "react";
+
+interface TemplateProps {
+  data: InvoiceData;
+}
+
+const ElegantTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) => {
+  const calculateTotal = () => {
+    return data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
+  };
+
+  const total = calculateTotal();
+  const totalInWords = numberToWordsFR(total);
+
+  return (
+    <div className="bg-[#ffffff] shadow-lg mx-auto w-[210mm] min-h-[297mm] relative" style={{ padding: '0' }}>
+      <div ref={ref} className="p-[40px] bg-[#faf9f6] h-full w-full text-[#333333] text-sm border-[12px] border-[#ffffff]" style={{ fontFamily: data.fontFamily || "'Playfair Display', Georgia, serif" }}>
+
+        {/* Header */}
+        <header className="text-center mb-14 pt-4 border-b border-[#d4af37] pb-8">
+          <h1 className="text-4xl font-normal uppercase tracking-[0.2em] text-[#0f172a] mb-3">{data.senderName || 'NOM ENTREPRISE'}</h1>
+          <p className="text-sm italic text-[#64748b] mb-4 tracking-wider">{data.senderSlogan || 'Slogan de l\'entreprise'}</p>
+          <div className="text-xs tracking-widest text-[#475569] flex justify-center items-center gap-4">
+            <span>{data.senderEmail || 'email@exemple.com'}</span>
+            <span className="text-[#d4af37]">•</span>
+            <span>{data.senderPhone || '+000 000 000 000'}</span>
+          </div>
+        </header>
+
+        <div className="flex justify-between mb-16">
+          <div className="w-[45%]">
+            <h2 className="text-3xl font-normal text-[#0f172a] uppercase tracking-widest mb-6">Facture</h2>
+            <div className="space-y-3 text-sm text-[#475569]">
+              <div className="flex"><span className="w-24 uppercase text-xs tracking-widest text-[#94a3b8]">Facture N°</span> <span className="font-medium text-[#0f172a]">{data.invoiceNumber || '---'}</span></div>
+              <div className="flex"><span className="w-24 uppercase text-xs tracking-widest text-[#94a3b8]">Date</span> <span className="font-medium text-[#0f172a]">{data.invoiceDate || '---'}</span></div>
+              <div className="flex"><span className="w-24 uppercase text-xs tracking-widest text-[#94a3b8]">Échéance</span> <span className="font-medium text-[#0f172a]">{data.invoiceValidity || '---'}</span></div>
+            </div>
+          </div>
+          
+          {/* Client Info */}
+          <div className="w-[45%] text-right">
+            <h3 className="text-xs uppercase tracking-widest text-[#d4af37] mb-3">Facturé à</h3>
+            <h4 className="font-normal text-xl text-[#0f172a] mb-2">{data.recipientName || 'Nom du Client'}</h4>
+            <p className="text-[#475569] whitespace-pre-line leading-relaxed">{data.recipientAddress || 'Adresse du client'}</p>
+          </div>
+        </div>
+
+        {/* Subject */}
+        <div className="mb-10 text-center">
+          <span className="inline-block border-t border-b border-[#e2e8f0] py-3 px-8 text-sm font-medium text-[#334155] tracking-wide">
+            <span className="uppercase text-xs text-[#94a3b8] mr-3 tracking-widest">Objet :</span>
+            {data.subject || 'Objet de la facture'}
+          </span>
+        </div>
+
+        {/* Items Table */}
+        <table className="w-full mb-12">
+          <thead>
+            <tr className="border-b border-[#0f172a]">
+              <th className="py-3 px-2 text-left font-normal text-xs uppercase tracking-widest text-[#94a3b8]">Désignation</th>
+              <th className="py-3 px-2 text-center w-24 font-normal text-xs uppercase tracking-widest text-[#94a3b8]">Quantité</th>
+              <th className="py-3 px-2 text-right w-32 font-normal text-xs uppercase tracking-widest text-[#94a3b8]">Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.items.length > 0 ? (
+              data.items.map((item) => (
+                <tr key={item.id} className="border-b border-[#e2e8f0]">
+                  <td className="py-5 px-2 align-top">
+                    <div className="font-medium text-[#0f172a] mb-2 text-base">{item.designation || 'Désignation'}</div>
+                    <div className="text-[#64748b] text-xs whitespace-pre-line leading-relaxed">{item.description}</div>
+                  </td>
+                  <td className="py-5 px-2 align-top text-center text-[#475569]">
+                    {item.quantity || '1'}
+                  </td>
+                  <td className="py-5 px-2 align-top text-right text-[#0f172a]">
+                    {formatCurrency((parseFloat(item.quantity) || 1) * (item.price || 0))}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3} className="py-12 text-center text-[#94a3b8] italic">
+                  Aucune ligne ajoutée
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        {/* Total Box */}
+        <div className="flex justify-end mb-12">
+          <div className="w-[50%]">
+            <div className="flex justify-between items-end border-b-2 border-[#d4af37] pb-2">
+              <span className="font-normal uppercase tracking-widest text-sm text-[#0f172a]">Total Général</span>
+              <span className="font-normal text-2xl text-[#0f172a] tracking-wider">{formatCurrency(total)} <span className="text-sm text-[#64748b] ml-1">FCFA</span></span>
+            </div>
+          </div>
+        </div>
+
+        {/* Amount in words */}
+        <div className="mb-16 text-center italic text-[#475569] text-sm">
+          Arrêtée la présente facture à la somme de : <br/>
+          <span className="font-medium text-[#0f172a] not-italic text-base mt-2 inline-block">{totalInWords} Francs CFA</span>
+        </div>
+
+        {/* Footer info */}
+        <div className="flex justify-between mt-auto px-8">
+          <div className="text-center w-1/3">
+            <h4 className="text-[10px] uppercase tracking-widest text-[#94a3b8] mb-2 border-b border-[#e2e8f0] pb-1 inline-block">Règlement</h4>
+            <p className="text-xs text-[#475569] mt-2">Virement ou Mobile Money</p>
+          </div>
+          <div className="text-center w-1/3">
+            <h4 className="text-[10px] uppercase tracking-widest text-[#94a3b8] mb-2 border-b border-[#e2e8f0] pb-1 inline-block">Signature</h4>
+            <p className="text-xs text-[#0f172a] mt-8 font-medium italic">{data.senderName ? data.senderName : 'L\'Entreprise'}</p>
+          </div>
+        </div>
+
+        {/* Absolute Footer line */}
+        <div className="absolute bottom-8 left-[40px] right-[40px]">
+          <div className="text-center text-[10px] uppercase tracking-widest text-[#94a3b8]">
+            Merci pour votre confiance
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+});
+
+ElegantTemplate.displayName = "ElegantTemplate";
+export default ElegantTemplate;

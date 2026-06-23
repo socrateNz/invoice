@@ -1,0 +1,99 @@
+import { InvoiceData } from "@/types/invoice";
+import { formatCurrency, numberToWordsFR } from "@/utils/format";
+import { forwardRef } from "react";
+
+interface TemplateProps {
+  data: InvoiceData;
+}
+
+const RetroTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) => {
+  const calculateTotal = () => data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
+  const total = calculateTotal();
+  const totalInWords = numberToWordsFR(total);
+
+  return (
+    <div className="bg-[#ffffff] shadow-lg mx-auto w-[210mm] min-h-[297mm] relative" style={{ padding: '0' }}>
+      <div ref={ref} className="p-[40px] bg-[#fffbeb] h-full w-full text-[#451a03] text-sm border-8 border-[#78350f]" style={{ fontFamily: data.fontFamily || "'Courier New', Courier, monospace" }}>
+
+        <header className="border-b-4 border-double border-[#78350f] pb-6 mb-8 text-center">
+          <h1 className="text-4xl font-bold uppercase tracking-widest text-[#78350f] mb-2">{data.senderName || 'RETRO COMPANY'}</h1>
+          <p className="text-sm font-bold text-[#92400e] mb-2">--- {data.senderSlogan || 'Vintage Services'} ---</p>
+          <div className="text-xs text-[#92400e] flex justify-center gap-4">
+            <span>[ EMAIL: {data.senderEmail || 'hello@retro.com'} ]</span>
+            <span>[ TEL: {data.senderPhone || '+000 000 000 000'} ]</span>
+          </div>
+        </header>
+
+        <div className="flex border-4 border-[#78350f] mb-8 bg-[#fef3c7]">
+          <div className="w-1/2 p-4 border-r-4 border-[#78350f]">
+            <h3 className="text-xs font-bold text-[#78350f] uppercase mb-2 underline">FACTURE A:</h3>
+            <h4 className="font-bold text-lg text-[#451a03]">{data.recipientName || 'Client Name'}</h4>
+            <p className="text-[#78350f] whitespace-pre-line mt-2">{data.recipientAddress || 'Client Address'}</p>
+          </div>
+          <div className="w-1/2 p-4">
+            <h3 className="text-xs font-bold text-[#78350f] uppercase mb-2 underline">DETAILS FACTURE:</h3>
+            <div className="space-y-1 text-[#451a03] font-bold">
+              <p>NO. FACTURE : {data.invoiceNumber || '---'}</p>
+              <p>DATE        : {data.invoiceDate || '---'}</p>
+              <p>ECHEANCE    : {data.invoiceValidity || '---'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-8 p-3 border-2 border-dashed border-[#78350f] text-[#451a03] font-bold">
+          &gt; OBJET : {data.subject || 'Objet de la facture'}
+        </div>
+
+        <table className="w-full mb-8 border-4 border-[#78350f]">
+          <thead>
+            <tr className="bg-[#78350f] text-[#fffbeb]">
+              <th className="py-2 px-3 text-left font-bold uppercase border-r-4 border-[#fffbeb]">DESCRIPTION</th>
+              <th className="py-2 px-3 text-center w-24 font-bold uppercase border-r-4 border-[#fffbeb]">QTE</th>
+              <th className="py-2 px-3 text-right w-32 font-bold uppercase">MONTANT</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.items.length > 0 ? data.items.map((item) => (
+              <tr key={item.id} className="border-b-2 border-[#78350f]">
+                <td className="py-4 px-3 border-r-4 border-[#78350f] align-top bg-[#fef3c7]">
+                  <div className="font-bold text-[#451a03] mb-1">&gt; {item.designation || 'Désignation'}</div>
+                  <div className="text-[#92400e] text-xs whitespace-pre-line ml-3">{item.description}</div>
+                </td>
+                <td className="py-4 px-3 border-r-4 border-[#78350f] align-top text-center font-bold bg-[#fef3c7]">{item.quantity || '1'}</td>
+                <td className="py-4 px-3 align-top text-right font-bold text-[#451a03] bg-[#fef3c7]">{formatCurrency((parseFloat(item.quantity) || 1) * (item.price || 0))}</td>
+              </tr>
+            )) : (
+              <tr><td colSpan={3} className="py-8 text-center text-[#d97706]">A U C U N E  L I G N E</td></tr>
+            )}
+          </tbody>
+        </table>
+
+        <div className="flex justify-end mb-10">
+          <div className="w-[50%] border-4 border-[#78350f] bg-[#78350f] text-[#fffbeb] flex justify-between p-3 font-bold text-xl">
+            <span>TOTAL :</span>
+            <span>{formatCurrency(total)} CFA</span>
+          </div>
+        </div>
+
+        <div className="mb-12 text-[#78350f] text-sm text-center font-bold">
+          *** SOMME ARRÊTÉE À : {totalInWords.toUpperCase()} FRANCS CFA ***
+        </div>
+
+        <div className="flex justify-between items-end mt-auto text-xs font-bold border-t-4 border-double border-[#78350f] pt-4">
+          <div>
+            <p className="text-[#451a03] mb-1 underline">REGLEMENT:</p>
+            <p className="text-[#92400e]">VIREMENT / MOBILE MONEY</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[#451a03] mb-6 underline">SIGNATURE:</p>
+            <p className="text-[#92400e]">{data.senderName ? data.senderName.toUpperCase() : 'L\'ENTREPRISE'}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+});
+
+RetroTemplate.displayName = "RetroTemplate";
+export default RetroTemplate;

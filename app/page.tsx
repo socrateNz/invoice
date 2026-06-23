@@ -22,17 +22,18 @@ const initialData: InvoiceData = {
   senderSlogan: "Solutions Numériques & Développement Web",
   senderEmail: "etarcos3@gmail.com",
   senderPhone: "+(237) 656 954 474",
-  
+
   recipientName: "Université Internationale Jean Paul 2 de Bafang",
   recipientAddress: "Bafang, Région de l'Ouest — Cameroun",
-  
+
   invoiceNumber: generateInvoiceNumber(),
   invoiceDate: "Douala, le 22 juin 2026",
   invoiceValidity: "30 jours",
-  
+
   subject: "Services d'hébergement, d'infrastructure et de maintenance du site web institutionnel",
   fontFamily: "Arial, Helvetica, sans-serif",
-  
+  template: "classic",
+
   items: [
     {
       id: "1",
@@ -65,7 +66,7 @@ export default function Home() {
 
   const generatePDF = async () => {
     if (!previewRef.current) return;
-    
+
     setIsGenerating(true);
     try {
       // Use higher scale for better quality
@@ -75,20 +76,20 @@ export default function Home() {
         logging: false,
         backgroundColor: '#ffffff'
       });
-      
+
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      
+
       // A4 portrait
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-      
+
       let heightLeft = imgHeight;
       let position = 0;
 
@@ -117,23 +118,17 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Générateur de Factures PRO</h1>
-              <p className="text-gray-500 text-sm">Créez et téléchargez vos factures au format PDF.</p>
+              <h1 className="text-2xl font-bold text-gray-800">{"ETARCOS BILL"}</h1>
+              <p className="text-gray-500 text-sm">{"Créez et téléchargez vos factures au format PDF."}</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <button 
-              onClick={() => window.print()}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors"
-            >
-              <Printer size={18} /> Imprimer
-            </button>
-            <button 
+            <button
               onClick={generatePDF}
               disabled={isGenerating}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors shadow-sm"
             >
-              <Download size={18} /> 
+              <Download size={18} />
               {isGenerating ? 'Génération...' : 'Télécharger PDF'}
             </button>
           </div>
@@ -153,9 +148,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      
+
       {/* Print only styles */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @media print {
           body * {
             visibility: hidden;

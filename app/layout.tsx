@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Générateur de Factures PRO | ETARCOS DEV",
+  title: "ETARCOS BILL | ETARCOS DEV",
   description: "Créez, personnalisez et téléchargez vos factures au format PDF en quelques clics.",
 };
 
