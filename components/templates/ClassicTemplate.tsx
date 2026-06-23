@@ -11,7 +11,7 @@ const ClassicTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref
     return data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
   };
 
-  const total = calculateTotal();
+  const total = data.grandTotal ?? calculateTotal();
   const totalInWords = numberToWordsFR(total);
 
   return (
@@ -39,111 +39,116 @@ const ClassicTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref
         </header>
 
         {/* Client Info */}
-        <div className="border border-[#1e3a8a] mb-6">
-          <div className="bg-[#e6edf5] text-[#1e3a8a] px-3 py-1 text-xs font-bold uppercase tracking-wider border-b border-[#1e3a8a]">
-            Destinataire / Client
-          </div>
-          <div className="p-3">
-            <h3 className="font-bold text-base text-[#111827]">{data.recipientName || 'Nom du Client'}</h3>
-            <p className="text-[#4b5563] whitespace-pre-line">{data.recipientAddress || 'Adresse du client'}</p>
-          </div>
-        </div>
+        {data.isFirstPage && (
+          <>
+            <div className="border border-[#1e3a8a] mb-6">
+              <div className="bg-[#e6edf5] text-[#1e3a8a] px-3 py-1 text-xs font-bold uppercase tracking-wider border-b border-[#1e3a8a]">
+                Destinataire / Client
+              </div>
+              <div className="p-3">
+                <h3 className="font-bold text-base text-[#111827]">{data.recipientName || 'Nom du Client'}</h3>
+                <p className="text-[#4b5563] whitespace-pre-line">{data.recipientAddress || 'Adresse du client'}</p>
+              </div>
+            </div>
 
-        {/* Subject */}
-        <div className="mb-6 font-medium text-[#1f2937]">
-          Objet : {data.subject || 'Objet de la facture'}
-        </div>
+            {/* Subject */}
+            <div className="mb-6 font-medium text-[#1f2937]">
+              Objet : {data.subject || 'Objet de la facture'}
+            </div>
+        )}
 
-        {/* Items Table */}
-        <table className="w-full mb-0 border-collapse border border-[#d1d5db]">
-          <thead>
-            <tr className="bg-[#1e3a8a] text-[#ffffff] uppercase text-xs">
-              <th className="py-2 px-3 text-left w-12 border border-[#1e3a8a]">N°</th>
-              <th className="py-2 px-3 text-left border border-[#1e3a8a]">Désignation / Description</th>
-              <th className="py-2 px-3 text-center w-24 border border-[#1e3a8a]">Quantité</th>
-              <th className="py-2 px-3 text-right w-32 border border-[#1e3a8a]">Montant<br /><span className="text-[10px]">(FCFA)</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.items.length > 0 ? (
-              data.items.map((item, index) => (
-                <tr key={item.id} className="border-b border-[#d1d5db]">
-                  <td className="py-3 px-3 align-top text-center border-x border-[#d1d5db]">
-                    {(index + 1).toString().padStart(2, '0')}
-                  </td>
-                  <td className="py-3 px-3 align-top border-x border-[#d1d5db]">
-                    <div className="font-bold text-[#111827] mb-1">{item.designation || 'Désignation'}</div>
-                    <div className="text-[#4b5563] text-xs whitespace-pre-line leading-relaxed">{item.description}</div>
-                  </td>
-                  <td className="py-3 px-3 align-top text-center border-x border-[#d1d5db]">
-                    {item.quantity || '1'}
-                  </td>
-                  <td className="py-3 px-3 align-top text-right border-x border-[#d1d5db]">
-                    {formatCurrency((parseFloat(item.quantity) || 1) * (item.price || 0))}
-                  </td>
+            {/* Items Table */}
+            <table className="w-full mb-0 border-collapse border border-[#d1d5db]">
+              <thead>
+                <tr className="bg-[#1e3a8a] text-[#ffffff] uppercase text-xs">
+                  <th className="py-2 px-3 text-left w-12 border border-[#1e3a8a]">N°</th>
+                  <th className="py-2 px-3 text-left border border-[#1e3a8a]">Désignation / Description</th>
+                  <th className="py-2 px-3 text-center w-24 border border-[#1e3a8a]">Quantité</th>
+                  <th className="py-2 px-3 text-right w-32 border border-[#1e3a8a]">Montant<br /><span className="text-[10px]">(FCFA)</span></th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={4} className="py-8 text-center text-[#9ca3af] border border-[#d1d5db]">
-                  Aucune ligne ajoutée
-                </td>
-              </tr>
-            )}
+              </thead>
+              <tbody>
+                {data.items.length > 0 ? (
+                  data.items.map((item, index) => (
+                    <tr key={item.id} className="border-b border-[#d1d5db]">
+                      <td className="py-3 px-3 align-top text-center border-x border-[#d1d5db]">
+                        {(index + 1).toString().padStart(2, '0')}
+                      </td>
+                      <td className="py-3 px-3 align-top border-x border-[#d1d5db]">
+                        <div className="font-bold text-[#111827] mb-1">{item.designation || 'Désignation'}</div>
+                        <div className="text-[#4b5563] text-xs whitespace-pre-line leading-relaxed">{item.description}</div>
+                      </td>
+                      <td className="py-3 px-3 align-top text-center border-x border-[#d1d5db]">
+                        {item.quantity || '1'}
+                      </td>
+                      <td className="py-3 px-3 align-top text-right border-x border-[#d1d5db]">
+                        {formatCurrency((parseFloat(item.quantity) || 1) * (item.price || 0))}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="py-8 text-center text-[#9ca3af] border border-[#d1d5db]">
+                      Aucune ligne ajoutée
+                    </td>
+                  </tr>
+                )}
 
-            {/* Minimal height filler row if few items to keep table structure */}
-            {data.items.length < 3 && (
-              <tr>
-                <td className="py-12 border-x border-[#d1d5db]"></td>
-                <td className="border-x border-[#d1d5db]"></td>
-                <td className="border-x border-[#d1d5db]"></td>
-                <td className="border-x border-[#d1d5db]"></td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                {/* Minimal height filler row if few items to keep table structure */}
+                {data.items.length < 3 && (
+                  <tr>
+                    <td className="py-12 border-x border-[#d1d5db]"></td>
+                    <td className="border-x border-[#d1d5db]"></td>
+                    <td className="border-x border-[#d1d5db]"></td>
+                    <td className="border-x border-[#d1d5db]"></td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
 
-        {/* Total Box */}
-        <div className="flex border border-t-0 border-[#1e3a8a] mb-2">
-          <div className="bg-[#1e3a8a] text-[#ffffff] flex-grow px-4 py-2 text-right font-bold tracking-wider">
-            TOTAL GENERAL (FCFA)
+            {/* Total Box */}
+            {data.isLastPage && (
+              <>
+                <div className="flex border border-t-0 border-[#1e3a8a] mb-2">
+                  <div className="bg-[#1e3a8a] text-[#ffffff] flex-grow px-4 py-2 text-right font-bold tracking-wider">
+                    TOTAL GENERAL (FCFA)
+                  </div>
+                  <div className="bg-[#facc15] text-[#111827] w-32 px-3 py-2 text-right font-bold text-base">
+                    {formatCurrency(total)}
+                  </div>
+                </div>
+
+                {/* Amount in words */}
+                <div className="border border-[#d1d5db] p-2 mb-8 text-sm">
+                  Arrêtée la présente facture à la somme de : <span className="font-bold text-[#1e3a8a]">{totalInWords} Francs CFA ({formatCurrency(total)} FCFA)</span>
+                </div>
+
+                {/* Footer info */}
+                <div className="flex justify-between border border-[#d1d5db] mb-12">
+                  <div className="p-4 w-1/2 border-r border-[#d1d5db]">
+                    <h4 className="font-bold text-[#1e3a8a] text-xs uppercase mb-3 tracking-wider">Conditions de Règlement</h4>
+                    <ul className="text-xs text-[#374151] space-y-1">
+                      <li>• Mode de règlement : virement bancaire / Mobile Money</li>
+                    </ul>
+                  </div>
+                  <div className="p-4 w-1/2 relative h-32">
+                    <h4 className="font-bold text-[#1e3a8a] text-xs uppercase mb-1 tracking-wider">Signature & Cachet</h4>
+                    <p className="text-xs text-[#4b5563] mb-8">Pour {data.senderName ? data.senderName.toUpperCase() : 'L\'ENTREPRISE'}</p>
+                    <p className="text-xs text-[#1f2937] absolute bottom-4">Le Directeur Général</p>
+                  </div>
+                </div>
+        )}
+
+                {/* Absolute Footer line */}
+                <div className="absolute bottom-10 left-[40px] right-[40px]">
+                  <div className="border-t-2 border-[#1e3a8a] pt-2 text-center text-xs text-[#6b7280]">
+                    <span className="font-semibold">{data.senderName ? data.senderName.toUpperCase() : 'ETARCOS DEV'}</span> — {data.senderSlogan || 'Solutions Numériques & Développement Web'} | {data.senderEmail || 'email@exemple.com'}
+                  </div>
+                </div>
+
+              </div>
           </div>
-          <div className="bg-[#facc15] text-[#111827] w-32 px-3 py-2 text-right font-bold text-base">
-            {formatCurrency(total)}
-          </div>
-        </div>
+        );;
 
-        {/* Amount in words */}
-        <div className="border border-[#d1d5db] p-2 mb-8 text-sm">
-          Arrêtée la présente facture à la somme de : <span className="font-bold text-[#1e3a8a]">{totalInWords} Francs CFA ({formatCurrency(total)} FCFA)</span>
-        </div>
-
-        {/* Footer info */}
-        <div className="flex justify-between border border-[#d1d5db] mb-12">
-          <div className="p-4 w-1/2 border-r border-[#d1d5db]">
-            <h4 className="font-bold text-[#1e3a8a] text-xs uppercase mb-3 tracking-wider">Conditions de Règlement</h4>
-            <ul className="text-xs text-[#374151] space-y-1">
-              <li>• Mode de règlement : virement bancaire / Mobile Money</li>
-            </ul>
-          </div>
-          <div className="p-4 w-1/2 relative h-32">
-            <h4 className="font-bold text-[#1e3a8a] text-xs uppercase mb-1 tracking-wider">Signature & Cachet</h4>
-            <p className="text-xs text-[#4b5563] mb-8">Pour {data.senderName ? data.senderName.toUpperCase() : 'L\'ENTREPRISE'}</p>
-            <p className="text-xs text-[#1f2937] absolute bottom-4">Le Directeur Général</p>
-          </div>
-        </div>
-
-        {/* Absolute Footer line */}
-        <div className="absolute bottom-10 left-[40px] right-[40px]">
-          <div className="border-t-2 border-[#1e3a8a] pt-2 text-center text-xs text-[#6b7280]">
-            <span className="font-semibold">{data.senderName ? data.senderName.toUpperCase() : 'ETARCOS DEV'}</span> — {data.senderSlogan || 'Solutions Numériques & Développement Web'} | {data.senderEmail || 'email@exemple.com'}
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-});
-
-ClassicTemplate.displayName = "ClassicTemplate";
-export default ClassicTemplate;
+        ClassicTemplate.displayName = "ClassicTemplate";
+        export default ClassicTemplate;

@@ -8,7 +8,7 @@ interface TemplateProps {
 
 const FuturisticTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) => {
   const calculateTotal = () => data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
-  const total = calculateTotal();
+  const total = data.grandTotal ?? calculateTotal();
   const totalInWords = numberToWordsFR(total);
 
   return (
@@ -42,6 +42,8 @@ const FuturisticTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, 
           </div>
         </header>
 
+        {data.isFirstPage && (
+          <>
         <div className="flex gap-4 mb-10">
           <div className="w-[60%] bg-[#0f172a] p-5 border border-[#1e293b] rounded">
             <h3 className="text-[10px] font-mono text-[#06b6d4] uppercase tracking-widest mb-2">TARGET_ENTITY</h3>
@@ -53,6 +55,8 @@ const FuturisticTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, 
             <p className="font-medium text-[#e2e8f0] text-sm leading-relaxed">{data.subject || 'Operation Subject'}</p>
           </div>
         </div>
+        </>
+        )}
 
         <table className="w-full mb-10 border-collapse">
           <thead>
@@ -78,6 +82,8 @@ const FuturisticTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, 
           </tbody>
         </table>
 
+        {data.isLastPage && (
+          <>
         <div className="flex justify-end mb-12">
           <div className="w-[50%] bg-[#0f172a] border border-[#06b6d4] p-4 flex justify-between items-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-[#06b6d4]"></div>
@@ -100,6 +106,7 @@ const FuturisticTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, 
             <p className="text-[#e2e8f0]">{data.senderName ? data.senderName.toUpperCase() : 'SYSADMIN'}</p>
           </div>
         </div>
+        </>)}
 
       </div>
     </div>

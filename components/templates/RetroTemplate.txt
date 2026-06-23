@@ -8,7 +8,7 @@ interface TemplateProps {
 
 const RetroTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) => {
   const calculateTotal = () => data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
-  const total = calculateTotal();
+  const total = data.grandTotal ?? calculateTotal();
   const totalInWords = numberToWordsFR(total);
 
   return (
@@ -24,6 +24,8 @@ const RetroTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) 
           </div>
         </header>
 
+        {data.isFirstPage && (
+          <>
         <div className="flex border-4 border-[#78350f] mb-8 bg-[#fef3c7]">
           <div className="w-1/2 p-4 border-r-4 border-[#78350f]">
             <h3 className="text-xs font-bold text-[#78350f] uppercase mb-2 underline">FACTURE A:</h3>
@@ -43,6 +45,8 @@ const RetroTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) 
         <div className="mb-8 p-3 border-2 border-dashed border-[#78350f] text-[#451a03] font-bold">
           &gt; OBJET : {data.subject || 'Objet de la facture'}
         </div>
+        </>
+        )}
 
         <table className="w-full mb-8 border-4 border-[#78350f]">
           <thead>
@@ -68,6 +72,8 @@ const RetroTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) 
           </tbody>
         </table>
 
+        {data.isLastPage && (
+          <>
         <div className="flex justify-end mb-10">
           <div className="w-[50%] border-4 border-[#78350f] bg-[#78350f] text-[#fffbeb] flex justify-between p-3 font-bold text-xl">
             <span>TOTAL :</span>
@@ -89,6 +95,7 @@ const RetroTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) 
             <p className="text-[#92400e]">{data.senderName ? data.senderName.toUpperCase() : 'L\'ENTREPRISE'}</p>
           </div>
         </div>
+        </>)}
 
       </div>
     </div>

@@ -24,4 +24,11 @@ export interface InvoiceData {
   template: 'classic' | 'modern' | 'minimalist' | 'creative' | 'elegant' | 'startup' | 'corporate' | 'eco' | 'retro' | 'futuristic';
   
   items: InvoiceItem[];
+  
+  // Pagination
+  isFirstPage?: boolean;
+  isLastPage?: boolean;
+  pageIndex?: number;
+  totalPages?: number;
+  grandTotal?: number;
 }

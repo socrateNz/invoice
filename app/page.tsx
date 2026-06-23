@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Download } from 'lucide-react';
 import InvoiceForm from "@/components/InvoiceForm";
-import InvoicePreview from "@/components/InvoicePreview";
+import PDFPreview from "@/components/PDFPreview";
 import { InvoiceData } from "@/types/invoice";
-import { Download, Printer } from "lucide-react";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+import { pdf } from '@react-pdf/renderer';
+import PDFRenderer from '@/components/PDFRenderer';
 
 const generateInvoiceNumber = () => {
   const now = new Date();
@@ -65,44 +65,15 @@ export default function Home() {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const generatePDF = async () => {
-    if (!previewRef.current) return;
-
     setIsGenerating(true);
     try {
-      // Use higher scale for better quality
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-      // A4 portrait
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-      pdf.save(`Facture_${data.invoiceNumber || 'Document'}.pdf`);
+      const blob = await pdf(<PDFRenderer data={data} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Facture_${data.invoiceNumber || 'Document'}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Erreur lors de la génération du PDF", error);
       alert("Une erreur est survenue lors de la génération du PDF.");
@@ -141,10 +112,8 @@ export default function Home() {
           </div>
 
           {/* Preview section */}
-          <div className="w-full xl:w-7/12 bg-gray-200 p-8 rounded-lg overflow-x-auto flex justify-center items-start shadow-inner">
-            <div className="scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9] xl:scale-[0.85] 2xl:scale-100 origin-top shadow-2xl transition-transform">
-              <InvoicePreview ref={previewRef} data={data} />
-            </div>
+          <div className="w-full xl:w-7/12 bg-gray-200 p-8 rounded-lg flex justify-center items-start shadow-inner">
+            <PDFPreview data={data} isGenerating={isGenerating} />
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ const ElegantTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref
     return data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
   };
 
-  const total = calculateTotal();
+  const total = data.grandTotal ?? calculateTotal();
   const totalInWords = numberToWordsFR(total);
 
   return (
@@ -40,11 +40,13 @@ const ElegantTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref
           </div>
           
           {/* Client Info */}
+          {data.isFirstPage && (
           <div className="w-[45%] text-right">
             <h3 className="text-xs uppercase tracking-widest text-[#d4af37] mb-3">Facturé à</h3>
             <h4 className="font-normal text-xl text-[#0f172a] mb-2">{data.recipientName || 'Nom du Client'}</h4>
             <p className="text-[#475569] whitespace-pre-line leading-relaxed">{data.recipientAddress || 'Adresse du client'}</p>
           </div>
+        )}
         </div>
 
         {/* Subject */}
@@ -91,6 +93,8 @@ const ElegantTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref
         </table>
 
         {/* Total Box */}
+        {data.isLastPage && (
+          <>
         <div className="flex justify-end mb-12">
           <div className="w-[50%]">
             <div className="flex justify-between items-end border-b-2 border-[#d4af37] pb-2">
@@ -117,6 +121,8 @@ const ElegantTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref
             <p className="text-xs text-[#0f172a] mt-8 font-medium italic">{data.senderName ? data.senderName : 'L\'Entreprise'}</p>
           </div>
         </div>
+        </>
+        )}
 
         {/* Absolute Footer line */}
         <div className="absolute bottom-8 left-[40px] right-[40px]">

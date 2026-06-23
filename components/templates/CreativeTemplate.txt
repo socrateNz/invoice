@@ -11,7 +11,7 @@ const CreativeTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, re
     return data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
   };
 
-  const total = calculateTotal();
+  const total = data.grandTotal ?? calculateTotal();
   const totalInWords = numberToWordsFR(total);
 
   return (
@@ -44,6 +44,7 @@ const CreativeTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, re
         </header>
 
         {/* Client & Subject */}
+        {data.isFirstPage && (
         <div className="bg-[#f3f4f6] rounded-2xl p-6 mb-10 flex border-l-4 border-[#0d9488]">
           <div className="w-1/2 pr-4 border-r border-[#d1d5db]">
             <h3 className="text-xs font-bold text-[#0d9488] uppercase tracking-wider mb-2">Destinataire</h3>
@@ -55,6 +56,7 @@ const CreativeTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, re
             <p className="font-medium text-[#1f2937] text-base leading-relaxed">{data.subject || 'Objet de la facture'}</p>
           </div>
         </div>
+        )}
 
         {/* Items Table */}
         <table className="w-full mb-8 border-separate" style={{ borderSpacing: '0 8px' }}>
@@ -92,6 +94,8 @@ const CreativeTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, re
         </table>
 
         {/* Total Box */}
+        {data.isLastPage && (
+          <>
         <div className="flex justify-end mb-10">
           <div className="w-[45%] bg-[#0f172a] text-[#ffffff] rounded-2xl p-6 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] transform rotate-1">
             <div className="flex justify-between items-center">
@@ -117,6 +121,8 @@ const CreativeTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, re
             <p className="text-xs text-[#6b7280] mb-8 font-medium">{data.senderName ? data.senderName.toUpperCase() : 'L\'ENTREPRISE'}</p>
           </div>
         </div>
+        </>
+        )}
 
         {/* Absolute Footer line */}
         <div className="absolute bottom-10 left-[40px] right-[40px]">

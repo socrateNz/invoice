@@ -8,7 +8,7 @@ interface TemplateProps {
 
 const EcoTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) => {
   const calculateTotal = () => data.items.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1) * (item.price || 0), 0);
-  const total = calculateTotal();
+  const total = data.grandTotal ?? calculateTotal();
 
   return (
     <div className="bg-[#ffffff] shadow-lg mx-auto w-[210mm] min-h-[297mm] relative" style={{ padding: '0' }}>
@@ -34,6 +34,8 @@ const EcoTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) =>
           </div>
         </header>
 
+        {data.isFirstPage && (
+          <>
         <div className="mb-12 border-l-4 border-[#84cc16] pl-6">
           <h3 className="text-xs font-bold text-[#84cc16] uppercase tracking-wider mb-2">À l'attention de</h3>
           <h4 className="font-bold text-xl text-[#3f6212]">{data.recipientName || 'Client Name'}</h4>
@@ -44,6 +46,8 @@ const EcoTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) =>
           <span className="font-bold uppercase text-xs mr-2 text-[#65a30d]">Objet :</span>
           <span className="font-medium">{data.subject || 'Objet de la facture'}</span>
         </div>
+        </>
+        )}
 
         <table className="w-full mb-10">
           <thead>
@@ -69,6 +73,8 @@ const EcoTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) =>
           </tbody>
         </table>
 
+        {data.isLastPage && (
+          <>
         <div className="flex justify-end mb-12">
           <div className="w-[50%] p-6 rounded-2xl bg-[#ecfccb] flex justify-between items-center border border-[#d9f99d]">
             <span className="font-bold text-[#4d7c0f] uppercase tracking-widest text-sm">Total</span>
@@ -90,6 +96,7 @@ const EcoTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ data }, ref) =>
             <p className="text-[#65a30d] italic">Merci de votre confiance écologique.</p>
           </div>
         </div>
+        </>)}
 
       </div>
     </div>
