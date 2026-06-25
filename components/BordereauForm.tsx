@@ -42,6 +42,31 @@ export default function BordereauForm({ onDataChange, initialData }: BordereauFo
         <p className="text-xs text-gray-500 mt-1">Remplissez les champs ci-dessous pour générer le bordereau PDF</p>
       </div>
 
+      {/* ── Template Selector ── */}
+      <div className={sectionClass}>
+        <div className={sectionHeaderClass}>
+          <span className={sectionTitleClass}>🎨 Modèle de document</span>
+        </div>
+        <div className={sectionBodyClass}>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { value: 'classique', label: 'Classique', desc: 'Marine & Or — UIJPII' },
+              { value: 'moderne',   label: 'Moderne',   desc: 'Épuré & Sarcelle' },
+              { value: 'prestige',  label: 'Prestige',  desc: 'Sombre & Luxueux' },
+            ].map(({ value, label, desc }) => {
+              const isActive = (watch('template') || 'classique') === value;
+              return (
+                <label key={value} className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition-all ${isActive ? 'border-[#1a2e5a] bg-[#1a2e5a]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                  <input type="radio" value={value} {...register('template')} className="sr-only" />
+                  <span className={`text-sm font-semibold ${isActive ? 'text-[#1a2e5a]' : 'text-gray-700'}`}>{label}</span>
+                  <span className="text-xs text-gray-400">{desc}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* ── Institution Info ── */}
       <div className={sectionClass}>
         <div className={sectionHeaderClass}>

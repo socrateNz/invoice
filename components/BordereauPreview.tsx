@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
 import { BordereauData } from '@/types/bordereau';
-import BordereauPDF from './pdf-templates/BordereauPDF';
+import BordereauRenderer from './pdf-templates/BordereauRenderer';
 
 interface BordereauPreviewProps {
   data: BordereauData;
@@ -28,7 +28,7 @@ export default function BordereauPreview({ data }: BordereauPreviewProps) {
     <div className="flex flex-col gap-4 w-full h-full">
       <div className="w-full h-[800px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
         <PDFViewer width="100%" height="100%" className="border-none">
-          <BordereauPDF data={data} />
+          <BordereauRenderer data={data} />
         </PDFViewer>
       </div>
     </div>

@@ -5,7 +5,11 @@ export interface BordereauDocument {
   observations: string;
 }
 
+export type BordereauTemplate = 'classique' | 'moderne' | 'prestige';
+
+
 export interface BordereauData {
+  template?: BordereauTemplate;
   // En-tête
   numeroBordereau: string;
   dateReception: string;

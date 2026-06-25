@@ -446,7 +446,7 @@ const BordereauPDF: React.FC<BordereauPDFProps> = ({ data }) => {
         <View style={styles.signaturesRow}>
           <View style={[styles.sigBox, styles.sigBoxLeft]}>
             <Text style={styles.sigBoxTitle}>Agent émetteur (Service)</Text>
-            <Text style={styles.sigFieldLabel}>Nom &amp; Prénom :</Text>
+            <Text style={styles.sigFieldLabel}>Nom &amp; Prénom : <Text style={styles.sigFieldValue}>{emptyLine(data.nomPrenomEmetteur)}</Text></Text>
             <View style={styles.sigLine} />
             <Text style={styles.sigFieldLabel}>Signature :</Text>
             <View style={[styles.sigLine, { marginBottom: 18 }]} />
@@ -454,7 +454,7 @@ const BordereauPDF: React.FC<BordereauPDFProps> = ({ data }) => {
           </View>
           <View style={styles.sigBox}>
             <Text style={styles.sigBoxTitle}>Réceptionniste (Cellule Informatique)</Text>
-            <Text style={styles.sigFieldLabel}>Nom &amp; Prénom :</Text>
+            <Text style={styles.sigFieldLabel}>Nom &amp; Prénom : <Text style={styles.sigFieldValue}>{emptyLine(data.nomPrenomReceptionniste)}</Text></Text>
             <View style={styles.sigLine} />
             <Text style={styles.sigFieldLabel}>Signature :</Text>
             <View style={[styles.sigLine, { marginBottom: 18 }]} />
