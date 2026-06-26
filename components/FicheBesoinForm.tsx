@@ -136,7 +136,7 @@ export default function FicheBesoinForm({ onDataChange, initialData }: FicheBeso
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
               <h4 className="text-xs font-bold text-gray-700 border-b pb-2">Demandeur</h4>
-              <div><label className={labelClass}>Nom</label><input {...register('demandeurNom')} disabled className={`${inputClass} bg-gray-100 cursor-not-allowed`} /></div>
+              <div><label className={labelClass}>Nom</label><input value={watch('demandeurNom') || ''} disabled readOnly className={`${inputClass} bg-gray-100 cursor-not-allowed`} /></div>
               <div><label className={labelClass}>Date de signature</label><input type="date" {...register('dateSignatureDemandeur')} className={inputClass} /></div>
             </div>
             <div className="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
