@@ -84,7 +84,7 @@ export default function EditorClient({ organization }: { organization: Organizat
         {/* ── Header ── */}
         <header className="mb-5 flex justify-between items-center bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="Retour au tableau de bord">
+            <Link href="/dashboard" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="Retour au tableau de bord">
               <Navigation size={20} className="text-gray-600 -rotate-90" />
             </Link>
             <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />

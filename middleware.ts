@@ -12,6 +12,7 @@ export default auth(function middleware(req: NextRequest & { auth: any }) {
   const { pathname } = req.nextUrl;
 
   const isPublic =
+    pathname === "/" || // landing page publique
     PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
@@ -28,7 +29,7 @@ export default auth(function middleware(req: NextRequest & { auth: any }) {
   // Vérification de l'accès à l'espace admin
   if (pathname.startsWith("/admin")) {
     if (req.auth.user.systemRole !== "SUPERADMIN") {
-      const dashboardUrl = new URL("/", req.url);
+      const dashboardUrl = new URL("/dashboard", req.url);
       return NextResponse.redirect(dashboardUrl);
     }
   }
