@@ -1,0 +1,83 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  slogan         String?
+  email          String?
+  phone          String?
+  location       String?
+  subtitle       String?
+  departments    String[]
+  logoUrl        String?
+  defaultAddress String?
+  taxId          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  members   OrganizationMember[]
+  documents Document[]
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String?
+  email      String   @unique
+  password   String
+  image      String?
+  systemRole String   @default("USER") // USER, SUPERADMIN
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  memberships OrganizationMember[]
+  auditLogs   AuditLog[]
+}
+
+model OrganizationMember {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  role           String   @default("MEMBER") // OWNER, ADMIN, MEMBER
+  organizationId String   @db.ObjectId
+  userId         String   @db.ObjectId
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+}
+
+model Document {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  type           String // INVOICE, BORDEREAU, FICHE_BESOIN...
+  numero         String?
+  data           Json // Payload du formulaire
+  status         String   @default("DRAFT") // DRAFT, VALIDATED, ARCHIVED
+  organizationId String   @db.ObjectId
+  createdById    String   @db.ObjectId
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditLogs    AuditLog[]
+}
+
+model AuditLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  action     String // CREATED, UPDATED, DOWNLOADED, VALIDATED
+  documentId String   @db.ObjectId
+  userId     String   @db.ObjectId
+  changes    Json? // Historique détaillé
+  timestamp  DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

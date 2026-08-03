@@ -20,6 +20,8 @@ export interface FicheBesoinData {
   institutionSubtitle: string;
   institutionLocation: string;
   institutionDepartment: string;
+  institutionAcronym: string;
+  footerText: string;
 
   // Demandeur
   demandeurNom: string;
@@ -41,4 +43,7 @@ export interface FicheBesoinData {
   directionNom: string;
   directionFonction: string;
   dateSignatureDirection: string;
+
+  /** Ephemeral, per-session digital signatures (slot key -> PNG data URL) — never persisted. */
+  signatures?: Record<string, string>;
 }

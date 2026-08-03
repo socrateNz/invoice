@@ -20,6 +20,8 @@ export interface BonCommandeData {
   institutionSubtitle: string;
   institutionLocation: string;
   institutionDepartment: string;
+  institutionAcronym: string;
+  footerText: string;
 
   // Fournisseur
   fournisseurNom: string;
@@ -43,4 +45,7 @@ export interface BonCommandeData {
   directeurNom: string;
   directeurFonction: string;
   dateSignature: string;
+
+  /** Ephemeral, per-session digital signatures (slot key -> PNG data URL) — never persisted. */
+  signatures?: Record<string, string>;
 }

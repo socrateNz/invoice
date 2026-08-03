@@ -71,4 +71,9 @@ export interface BordereauData {
   institutionSubtitle: string;
   institutionLocation: string;
   institutionDepartment: string;
+  institutionAcronym: string;
+  footerText: string;
+
+  /** Ephemeral, per-session digital signatures (slot key -> PNG data URL) — never persisted. */
+  signatures?: Record<string, string>;
 }

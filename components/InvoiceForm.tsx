@@ -3,6 +3,17 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { InvoiceData } from "@/types/invoice";
 import { Plus, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useEffect } from "react";
 import { Input } from "./ui/input";
 
@@ -143,14 +154,21 @@ export default function InvoiceForm({ onDataChange, initialData }: InvoiceFormPr
           <div className="space-y-4">
             {fields.map((field, index) => (
               <div key={field.id} className="p-4 border rounded bg-gray-50 relative group">
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Supprimer"
-                >
-                  <Trash2 size={18} />
-                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger className="absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" title="Supprimer">
+                    <Trash2 size={18} />
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                      <AlertDialogDescription>Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => remove(index)}>Supprimer</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-12 md:col-span-7 space-y-3">
                     <div>

@@ -13,6 +13,8 @@ export interface RecuPaiementData {
   institutionSubtitle: string;
   institutionLocation: string;
   institutionDepartment: string;
+  institutionAcronym: string;
+  footerText: string;
 
   // Paiement
   recuDe: string;           // Nom du payeur
@@ -36,4 +38,7 @@ export interface RecuPaiementData {
   // Caissier / Signature
   nomCaissier: string;
   dateSignature: string;
+
+  /** Ephemeral, per-session digital signatures (slot key -> PNG data URL) — never persisted. */
+  signatures?: Record<string, string>;
 }

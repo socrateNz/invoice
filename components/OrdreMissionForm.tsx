@@ -1,25 +1,24 @@
 "use client";
-import { useForm } from "react-hook-form";
 import { OrdreMissionData } from "@/types/ordre-mission";
-import { useEffect } from "react";
 import { User, MapPin, Truck, Wallet, PenLine } from "lucide-react";
+import { SECTION_CARD as SC, SECTION_TITLE as ST, SECTION_BODY as SB, FIELD_LABEL as L } from "@/components/forms/shared/styles";
+import { useDocumentForm } from "@/components/forms/shared/useDocumentForm";
+import { TemplateSelector } from "@/components/forms/shared/TemplateSelector";
+import SignatureField from "@/components/SignatureField";
 
-const SC = "bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-5";
 const SH = "flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#1a2e5a] to-[#243d78] text-white";
-const ST = "font-semibold text-sm tracking-wide";
-const SB = "p-5 space-y-4";
-const L = "block text-xs font-medium text-gray-600 mb-1";
 const I = "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2e5a] focus:border-transparent transition-all bg-white";
 const CB = "w-4 h-4 rounded border-gray-300 text-[#1a2e5a] focus:ring-[#1a2e5a] cursor-pointer";
 
-interface Props { onDataChange: (d: OrdreMissionData) => void; initialData: OrdreMissionData; }
+interface Props {
+  onDataChange: (d: OrdreMissionData) => void;
+  initialData: OrdreMissionData;
+  signatures?: Record<string, string>;
+  onSignatureChange?: (slot: string, dataUrl: string | null) => void;
+}
 
-export default function OrdreMissionForm({ onDataChange, initialData }: Props) {
-  const { register, watch } = useForm<OrdreMissionData>({ defaultValues: initialData });
-  useEffect(() => {
-    const sub = watch((v) => onDataChange(v as OrdreMissionData));
-    return () => sub.unsubscribe();
-  }, [watch, onDataChange]);
+export default function OrdreMissionForm({ onDataChange, initialData, signatures = {}, onSignatureChange = () => {} }: Props) {
+  const { register, watch } = useDocumentForm<OrdreMissionData>(initialData, onDataChange);
 
   return (
     <div className="space-y-1">
@@ -28,30 +27,11 @@ export default function OrdreMissionForm({ onDataChange, initialData }: Props) {
         <p className="text-xs text-gray-500 mt-1">Remplissez les champs pour générer l'ordre de mission PDF</p>
       </div>
 
-      {/* ── Template Selector ── */}
-      <div className={SC}>
-        <div className={SH}>
-          <span className={ST}>🎨 Modèle de document</span>
-        </div>
-        <div className={SB}>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { value: 'classique', label: 'Classique', desc: 'Standard UIJPII' },
-              { value: 'moderne',   label: 'Moderne',   desc: 'Vert Forêt & Épuré' },
-              { value: 'prestige',  label: 'Prestige',  desc: 'Bordeaux & Or Premium' },
-            ].map(({ value, label, desc }) => {
-              const isActive = (watch('template') || 'classique') === value;
-              return (
-                <label key={value} className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition-all ${isActive ? 'border-[#1a2e5a] bg-[#1a2e5a]/5' : 'border-gray-200 hover:border-gray-300'}`}>
-                  <input type="radio" value={value} {...register('template')} className="sr-only" />
-                  <span className={`text-sm font-semibold ${isActive ? 'text-[#1a2e5a]' : 'text-gray-700'}`}>{label}</span>
-                  <span className="text-xs text-gray-400">{desc}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <TemplateSelector register={register} watch={watch} name="template" gradientFrom="#1a2e5a" gradientTo="#243d78" options={[
+        { value: 'classique', label: 'Classique', desc: 'Standard' },
+        { value: 'moderne', label: 'Moderne', desc: 'Vert Forêt & Épuré' },
+        { value: 'prestige', label: 'Prestige', desc: 'Bordeaux & Or Premium' },
+      ]} />
 
       {/* Institution */}
       <div className={SC}>
@@ -62,6 +42,8 @@ export default function OrdreMissionForm({ onDataChange, initialData }: Props) {
             <div><label className={L}>Sous-titre</label><input {...register("institutionSubtitle")} className={I} placeholder="JEAN PAUL II DE BAFANG" /></div>
             <div><label className={L}>Localisation</label><input {...register("institutionLocation")} className={I} placeholder="Bafang, Cameroun" /></div>
             <div><label className={L}>Département</label><input {...register("institutionDepartment")} className={I} placeholder="Cellule Informatique" /></div>
+            <div><label className={L}>Acronyme Institution</label><input {...register("institutionAcronym")} className={I} placeholder="UIJPII" /></div>
+            <div className="col-span-2"><label className={L}>Texte du pied de page</label><input {...register("footerText")} className={I} placeholder="UIJPII — Cellule Informatique | Science et conscience pour un monde meilleur — UIJPII" /></div>
           </div>
           <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
             <div><label className={L}>N° de l'Ordre</label><input {...register("numeroOrdre")} className={I} placeholder="OM-2026-001" /></div>
@@ -144,9 +126,19 @@ export default function OrdreMissionForm({ onDataChange, initialData }: Props) {
         <div className={SH}><PenLine size={16} /><span className={ST}>Observations & Signature</span></div>
         <div className={SB}>
           <div><label className={L}>Instructions / Observations</label><textarea {...register("observations")} rows={2} className={`${I} resize-none`} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-[#1a2e5a] uppercase border-b pb-1">L'Intéressé(e)</h4>
+              <SignatureField label="L'Intéressé(e)" value={signatures.interesse} onChange={(v) => onSignatureChange("interesse", v)} />
+            </div>
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-[#1a2e5a] uppercase border-b pb-1">Autorisateur</h4>
+              <div><label className={L}>Autorisé par</label><input {...register("autorisePar")} className={I} /></div>
+              <div><label className={L}>Titre de l'autorisateur</label><input {...register("titreAutorisateur")} className={I} placeholder="Directeur Général" /></div>
+              <SignatureField label="Autorisateur" value={signatures.autorisateur} onChange={(v) => onSignatureChange("autorisateur", v)} />
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={L}>Autorisé par</label><input {...register("autorisePar")} className={I} /></div>
-            <div><label className={L}>Titre de l'autorisateur</label><input {...register("titreAutorisateur")} className={I} placeholder="Directeur Général" /></div>
             <div><label className={L}>Lieu de signature</label><input {...register("lieuSignature")} className={I} placeholder="Bafang" /></div>
             <div><label className={L}>Date de signature</label><input type="date" {...register("dateSignature")} className={I} /></div>
           </div>

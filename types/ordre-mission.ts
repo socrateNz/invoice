@@ -12,6 +12,8 @@ export interface OrdreMissionData {
   institutionSubtitle: string;
   institutionLocation: string;
   institutionDepartment: string;
+  institutionAcronym: string;
+  footerText: string;
 
   // Agent
   nomPrenom: string;
@@ -51,4 +53,7 @@ export interface OrdreMissionData {
   titreAutorisateur: string;
   dateSignature: string;
   lieuSignature: string;
+
+  /** Ephemeral, per-session digital signatures (slot key -> PNG data URL) — never persisted. */
+  signatures?: Record<string, string>;
 }

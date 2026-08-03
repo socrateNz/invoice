@@ -1,39 +1,42 @@
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
 import { BordereauData } from "@/types/bordereau";
 import { Plus, Trash2, Building2, FileText, ListChecks, AlertTriangle, ClipboardCheck, PenLine } from "lucide-react";
-import { useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { SECTION_CARD as sectionClass, SECTION_TITLE as sectionTitleClass, SECTION_BODY as sectionBodyClass, FIELD_LABEL as labelClass } from "@/components/forms/shared/styles";
+import { useDocumentForm } from "@/components/forms/shared/useDocumentForm";
+import { TemplateSelector } from "@/components/forms/shared/TemplateSelector";
+import SignatureField from "@/components/SignatureField";
 
 interface BordereauFormProps {
   onDataChange: (data: BordereauData) => void;
   initialData: BordereauData;
+  signatures?: Record<string, string>;
+  onSignatureChange?: (slot: string, dataUrl: string | null) => void;
 }
 
-const sectionClass = "bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-5";
 const sectionHeaderClass = "flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#1a2e5a] to-[#243d78] text-white";
-const sectionTitleClass = "font-semibold text-sm tracking-wide";
-const sectionBodyClass = "p-5 space-y-4";
-const labelClass = "block text-xs font-medium text-gray-600 mb-1";
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2e5a] focus:border-transparent transition-all bg-white";
 const checkboxClass = "w-4 h-4 rounded border-gray-300 text-[#1a2e5a] focus:ring-[#1a2e5a] cursor-pointer";
 
-export default function BordereauForm({ onDataChange, initialData }: BordereauFormProps) {
-  const { register, control, watch } = useForm<BordereauData>({
-    defaultValues: initialData,
-  });
+export default function BordereauForm({ onDataChange, initialData, signatures = {}, onSignatureChange = () => {} }: BordereauFormProps) {
+  const { register, control, watch } = useDocumentForm<BordereauData>(initialData, onDataChange);
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "documents",
   });
-
-  useEffect(() => {
-    const subscription = watch((value) => {
-      onDataChange(value as BordereauData);
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, onDataChange]);
 
   return (
     <div className="space-y-1">
@@ -42,30 +45,11 @@ export default function BordereauForm({ onDataChange, initialData }: BordereauFo
         <p className="text-xs text-gray-500 mt-1">Remplissez les champs ci-dessous pour générer le bordereau PDF</p>
       </div>
 
-      {/* ── Template Selector ── */}
-      <div className={sectionClass}>
-        <div className={sectionHeaderClass}>
-          <span className={sectionTitleClass}>🎨 Modèle de document</span>
-        </div>
-        <div className={sectionBodyClass}>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { value: 'classique', label: 'Classique', desc: 'Marine & Or — UIJPII' },
-              { value: 'moderne',   label: 'Moderne',   desc: 'Épuré & Sarcelle' },
-              { value: 'prestige',  label: 'Prestige',  desc: 'Sombre & Luxueux' },
-            ].map(({ value, label, desc }) => {
-              const isActive = (watch('template') || 'classique') === value;
-              return (
-                <label key={value} className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition-all ${isActive ? 'border-[#1a2e5a] bg-[#1a2e5a]/5' : 'border-gray-200 hover:border-gray-300'}`}>
-                  <input type="radio" value={value} {...register('template')} className="sr-only" />
-                  <span className={`text-sm font-semibold ${isActive ? 'text-[#1a2e5a]' : 'text-gray-700'}`}>{label}</span>
-                  <span className="text-xs text-gray-400">{desc}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <TemplateSelector register={register} watch={watch} name="template" gradientFrom="#1a2e5a" gradientTo="#243d78" options={[
+        { value: 'classique', label: 'Classique', desc: 'Marine & Or — UIJPII' },
+        { value: 'moderne', label: 'Moderne', desc: 'Épuré & Sarcelle' },
+        { value: 'prestige', label: 'Prestige', desc: 'Sombre & Luxueux' },
+      ]} />
 
       {/* ── Institution Info ── */}
       <div className={sectionClass}>
@@ -90,6 +74,14 @@ export default function BordereauForm({ onDataChange, initialData }: BordereauFo
             <div>
               <label className={labelClass}>Département émetteur</label>
               <input {...register("institutionDepartment")} className={inputClass} placeholder="Cellule Informatique" />
+            </div>
+            <div>
+              <label className={labelClass}>Acronyme Institution</label>
+              <input {...register("institutionAcronym")} className={inputClass} placeholder="UIJPII" />
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>Texte du pied de page</label>
+              <input {...register("footerText")} className={inputClass} placeholder="UIJPII — Cellule Informatique | Science et conscience pour un monde meilleur — UIJPII" />
             </div>
           </div>
         </div>
@@ -267,14 +259,21 @@ export default function BordereauForm({ onDataChange, initialData }: BordereauFo
                   />
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity mt-6 shrink-0"
-                title="Supprimer"
-              >
-                <Trash2 size={15} />
-              </button>
+              <AlertDialog>
+                <AlertDialogTrigger className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity mt-6 shrink-0" title="Supprimer">
+                  <Trash2 size={15} />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                    <AlertDialogDescription>Voulez-vous vraiment supprimer ce document ?</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => remove(index)}>Supprimer</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           ))}
           {fields.length === 0 && (
@@ -387,6 +386,7 @@ export default function BordereauForm({ onDataChange, initialData }: BordereauFo
                 <label className={labelClass}>Date de signature</label>
                 <input type="date" {...register("dateSignatureEmetteur")} className={inputClass} />
               </div>
+              <SignatureField label="Agent émetteur" value={signatures.emetteur} onChange={(v) => onSignatureChange("emetteur", v)} />
             </div>
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-[#1a2e5a] uppercase tracking-wider border-b border-gray-200 pb-1">
@@ -400,6 +400,7 @@ export default function BordereauForm({ onDataChange, initialData }: BordereauFo
                 <label className={labelClass}>Date de signature</label>
                 <input type="date" {...register("dateSignatureReceptionniste")} className={inputClass} />
               </div>
+              <SignatureField label="Réceptionniste" value={signatures.receptionniste} onChange={(v) => onSignatureChange("receptionniste", v)} />
             </div>
           </div>
         </div>
